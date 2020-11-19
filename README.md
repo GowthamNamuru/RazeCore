@@ -1,2 +1,4 @@
 # RazeCore
- A reusable framework!
+
+A description of this package.
+ 

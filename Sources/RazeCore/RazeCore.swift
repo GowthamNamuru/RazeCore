@@ -1,6 +1,13 @@
 import UIKit
 
 class RazeCore {
+    
+    /// Allows you to convert a 6 digit hexadecimal string into a UIColor instance
+    ///  - Warning: The "#" symbol is stripped from the beginning of the string submitted here.
+    /// - Parameters:
+    ///   - hexString: A 6-digit hexadecimal string. Use 6 digits rather than 8, and add the accompanying alpha valu in the second parameter.
+    ///   - alpha: A number between 0.0 and 1.0 indicating how transparent the color is.
+    /// - Returns: A UIColor defined by the **hexString** parameter.
     class func colorFromHexString(_ hexString: String,_ alpha: CGFloat = 1.0) -> UIColor {
         let r, g, b: CGFloat
         let offset = hexString.hasPrefix("#") ? 1 : 0

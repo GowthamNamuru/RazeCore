@@ -16,9 +16,18 @@ class NetworkSessionMock: NetworkSession {
     func get(from url: URL, completionHandler: @escaping (Data?, Error?) -> Void) {
         completionHandler(data, error)
     }
-    
+    func post(with request: URLRequest, completionHandler: @escaping (Data?, Error?) -> Void) {
+        completionHandler(data, error)
+    }
     
 }
+
+struct MockData: Codable, Equatable {
+    var name: String
+    var id: Int
+    
+}
+
 
 final class RazeNetworkingTests: XCTestCase {
 
@@ -39,10 +48,33 @@ final class RazeNetworkingTests: XCTestCase {
                 XCTFail(error?.localizedDescription ?? "error forming error result")
             }
         }
-        wait(for: [expectation], timeout: 9)
+        wait(for: [expectation], timeout: 5)
+    }
+    
+    func testSendDataCall() {
+        let session = NetworkSessionMock()
+        let manager = RazeCore.Networking.Manager()
+        let sampleObject = MockData(name: "David", id: 1)
+        let data = try? JSONEncoder().encode(sampleObject)
+        session.data = data
+        manager.session = session
+        let url = URL(fileURLWithPath: "url")
+        let expectation = XCTestExpectation(description: "Sent data")
+        manager.sendData(to: url, body: sampleObject) { result in
+            expectation.fulfill()
+            switch result {
+            case .success(let returnedData):
+                let returnedObject = try? JSONDecoder().decode(MockData.self, from: returnedData)
+                XCTAssertEqual(returnedObject, sampleObject)
+            case .failure(let error):
+                XCTFail(error?.localizedDescription ?? "error forming error result")
+            }
+        }
+        wait(for: [expectation], timeout: 5)
     }
     
     static var allTests = [
-        ("testLoadDataCall", testLoadDataCall)
+        ("testLoadDataCall", testLoadDataCall),
+        ("testSendDataCall", testSendDataCall)
     ]
 }
